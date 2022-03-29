@@ -1,7 +1,7 @@
 from functools import lru_cache
 import json
 from pathlib import Path
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 from .utils import normalize_path
 from .indexer import JSONLIndexer
 import numpy as np
@@ -10,7 +10,7 @@ class JSONLDataset:
     
     def __init__(self, path: Union[str, Path], build_index_on_load: bool = True) -> None:
         self.build_index_on_load = build_index_on_load
-        self.index = []
+        self.index: List[int] = []
         self._data_path, self._index_path = self._resolve_path(path)
 
         if not self.index:
@@ -51,9 +51,9 @@ class JSONLDataset:
         indexer.write_index_to_disk()
         self.index = indexer._index
 
-    def _load_index(self, path: Path) -> np.ndarray:
+    def _load_index(self, path: Path) -> List[int]:
         # TODO: check if index loading is a performance bottleneck, if so, use a better integer loader
-        return np.load(path, mmap_mode='r')
+        return np.load(path, mmap_mode='r').tolist()
 
     @lru_cache(maxsize=1024)
     def __getitem__(self, index: int) -> dict:

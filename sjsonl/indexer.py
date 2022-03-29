@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import List, Optional, Union, Generator
 
 import numpy as np
-import tqdm
+import tqdm  # type: ignore
 from .utils import count_lines, normalize_path
 
 class JSONLIndexer:
