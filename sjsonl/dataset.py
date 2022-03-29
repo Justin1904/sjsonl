@@ -30,21 +30,21 @@ class JSONLDataset:
         else:
             raise ValueError(f'path must be a directory, JSONL file or extension-less path'
                              f'to both .index.npy and .jsonl files wrapped by pathlib.Path, but got {path}')
-        
+
+        if not data_path.exists():
+            raise FileNotFoundError(f'data file {data_path} not found')\
+
         if not index_path.exists():
             if self.build_index_on_load:
                 print(f"Index not found, building index at {index_path}...")
-                self._build_index()
+                self._build_index(data_path)
             else:
                 raise FileNotFoundError(f'index file {index_path} not found')
 
-        if not data_path.exists():
-            raise FileNotFoundError(f'data file {data_path} not found')
-        
         return data_path, index_path
 
-    def _build_index(self) -> None:
-        indexer = JSONLIndexer(self._data_path)
+    def _build_index(self, data_path: Path) -> None:
+        indexer = JSONLIndexer(data_path)
         indexer.populate_index()
         indexer.write_index_to_disk()
         self.index = indexer._index
