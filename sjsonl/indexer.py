@@ -42,6 +42,6 @@ class JSONLIndexer:
         if not path:
             path = self.data_path.with_suffix('.index.npy')
         print(f'Writing index to disk at {path}...')
-        data = np.array(self._index, dtype=np.int32)
+        data = np.array(self._index)
         np.save(path, data)
         print(f'Index written to {path}')
