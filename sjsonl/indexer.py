@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional, Union, Generator
+from typing import List, Optional, Union, Generator
 
 import numpy as np
 import tqdm
@@ -16,7 +16,7 @@ class JSONLIndexer:
         """
         self.data_path = normalize_path(path)
         self.check = check
-        self._index = []
+        self._index: List[int] = []
 
     def _path_to_byte_locations(self, path: Union[str, Path]) -> Generator[int, None, None]:
         yield 0
@@ -33,9 +33,11 @@ class JSONLIndexer:
         print('Populating index...')
         total_lines = count_lines(self.data_path)
         print(f'Total lines: {total_lines}')
-        for loc in tqdm.tqdm(self._path_to_byte_locations(self.data_path), total=total_lines):
-            self._index.append(loc)
-        self._index.pop()  # remove the last item which points to end of file
+        with tqdm.tqdm(total=total_lines) as pbar:
+            for loc in self._path_to_byte_locations(self.data_path):
+                self._index.append(loc)
+                pbar.update(len(self._index))
+            self._index.pop()  # remove the last item which points to end of file
         print(f'Indexed {len(self._index)} lines')
 
     def write_index_to_disk(self, path: Optional[Union[str, Path]] = None) -> None:
