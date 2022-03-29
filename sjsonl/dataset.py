@@ -10,13 +10,15 @@ class JSONLDataset:
     
     def __init__(self, path: Union[str, Path], build_index_on_load: bool = True) -> None:
         self.build_index_on_load = build_index_on_load
+        self.index = []
         self._data_path, self._index_path = self._resolve_path(path)
-        
+
         if not self.index:
             print(f"Loading existing index from {self._index_path}...")
             self.index = self._load_index(self._index_path)
 
     def _resolve_path(self, path: Union[str, Path]) -> Tuple[Path, Path]:
+        # TODO: consider taking index building out of this function as it's not obvious by the name
         path = normalize_path(path)
         if path.suffix and path.suffix != '.jsonl':
             raise ValueError(f'path must have .jsonl extension, not {path.suffix}')
