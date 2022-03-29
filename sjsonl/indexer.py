@@ -35,6 +35,7 @@ class JSONLIndexer:
         print(f'Total lines: {total_lines}')
         for loc in tqdm.tqdm(self._path_to_byte_locations(self.data_path), total=total_lines):
             self._index.append(loc)
+        self._index.pop()  # remove the last item which points to end of file
         print(f'Indexed {len(self._index)} lines')
 
     def write_index_to_disk(self, path: Optional[Union[str, Path]] = None) -> None:

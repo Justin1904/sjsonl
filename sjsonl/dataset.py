@@ -13,7 +13,7 @@ class JSONLDataset:
 
     def _resolve_path(self, path) -> Tuple[Path, Path]:
         path = normalize_path(path)
-        if path.suffix and path.suffix != 'jsonl':
+        if path.suffix and path.suffix != '.jsonl':
             raise ValueError(f'path must have .jsonl extension, not {path.suffix}')
 
         if path.is_dir():
@@ -38,8 +38,10 @@ class JSONLDataset:
         # TODO: check if index loading is a performance bottleneck, if so, use a better integer loader
         return np.load(path, mmap_mode='r')
 
-    @lru_cache(maxsize=32)
+    @lru_cache(maxsize=1024)
     def __getitem__(self, index: int) -> dict:
+        if index < 0 or index >= len(self):
+            raise IndexError(f'index must be between 0 and {len(self)-1}')
         # TODO: support only loading a subset of fields to speed up loading
         with open(self._data_path, 'rb') as f:
             f.seek(self.index[index])
