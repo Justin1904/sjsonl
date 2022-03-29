@@ -1,0 +1,46 @@
+from pathlib import Path
+from typing import Optional, Union, Generator
+
+import numpy as np
+import tqdm
+from .utils import count_lines, normalize_path
+
+class JSONLIndexer:
+    # TODO: see if there's need for parallel indexer
+    def __init__(self, path: Union[str, Path], check: bool = False) -> None:
+        """JSONL indexer. Receives a path to a JSONL file, and returns a list of indices that point to the beginning of each JSON object.
+
+        Args:
+            path (Union[str, Path]): path to the JSONL file
+            check (bool, optional): whether or not to check if the index file lines are valid JSON. Defaults to False.
+        """
+        self.data_path = normalize_path(path)
+        self.check = check
+        self._index = []
+
+    def _path_to_byte_locations(self, path: Union[str, Path]) -> Generator[int, None, None]:
+        yield 0
+        with open(path, 'rb') as f:
+            for line in f:
+                if self.check:
+                    self._check_line(line)
+                yield f.tell()
+
+    def _check_line(self, line: bytes) -> None:
+        raise NotImplementedError('Checking lines is not implemented yet')
+
+    def populate_index(self) -> None:
+        print('Populating index...')
+        total_lines = count_lines(self.data_path)
+        print(f'Total lines: {total_lines}')
+        for loc in tqdm.tqdm(self._path_to_byte_locations(self.data_path), total=total_lines):
+            self._index.append(loc)
+        print(f'Indexed {len(self._index)} lines')
+
+    def write_index_to_disk(self, path: Optional[Union[str, Path]]) -> None:
+        if not path:
+            path = self.data_path.with_suffix('.idx')
+        print(f'Writing index to disk at {path}...')
+        data = np.array(self._index, dtype=np.int32)
+        np.save(path, data)
+        print(f'Index written to {path}')
