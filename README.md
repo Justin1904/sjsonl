@@ -12,8 +12,7 @@ This repo is a minimal library for working with [JSON Lines](https://jsonlines.o
 1. Inefficient if loading significant amount of data
 2. While partial loading is possible, it usually prevents random access which causes trouble for saving & loading dataloader states
 
-To this end, this library takes a middle ground by first creating an index for a given JSONL data file. The index is just an 1-D numpy
-uint32 array (assuming there's less than ~4 billion samples, which is usually the case for today's NLP applications). The i-th integer
+To this end, this library takes a middle ground by first creating an index for a given JSONL data file. The index is just an 1-D numpy array (assuming there's less than ~4 billion samples, which is usually the case for today's NLP applications). The i-th integer
 in the index is essentially the byte-level offset of the i-th line in the data file. At dataloading time, the logic roughly translates
 to the following pseudo-code:
 
