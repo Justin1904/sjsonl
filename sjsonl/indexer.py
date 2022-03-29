@@ -36,7 +36,7 @@ class JSONLIndexer:
         with tqdm.tqdm(total=total_lines) as pbar:
             for loc in self._path_to_byte_locations(self.data_path):
                 self._index.append(loc)
-                pbar.update(len(self._index))
+                pbar.update()
             self._index.pop()  # remove the last item which points to end of file
         print(f'Indexed {len(self._index)} lines')
 
