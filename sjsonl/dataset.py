@@ -3,15 +3,20 @@ import json
 from pathlib import Path
 from typing import Tuple, Union
 from .utils import normalize_path
+from .indexer import JSONLIndexer
 import numpy as np
 
 class JSONLDataset:
     
-    def __init__(self, path: Union[str, Path]) -> None:
+    def __init__(self, path: Union[str, Path], build_index_on_load: bool = True) -> None:
+        self.build_index_on_load = build_index_on_load
         self._data_path, self._index_path = self._resolve_path(path)
-        self.index = self._load_index(self._index_path)
+        
+        if not self.index:
+            print(f"Loading existing index from {self._index_path}...")
+            self.index = self._load_index(self._index_path)
 
-    def _resolve_path(self, path) -> Tuple[Path, Path]:
+    def _resolve_path(self, path: Union[str, Path]) -> Tuple[Path, Path]:
         path = normalize_path(path)
         if path.suffix and path.suffix != '.jsonl':
             raise ValueError(f'path must have .jsonl extension, not {path.suffix}')
@@ -19,7 +24,7 @@ class JSONLDataset:
         if path.is_dir():
             index_path = path / 'data.index.npy'
             data_path = path / 'data.jsonl'
-        elif path.with_suffix('.index.npy').is_file() and path.with_suffix('.jsonl').is_file():
+        elif path.with_suffix('.jsonl').is_file():
             index_path = path.with_suffix('.index.npy')
             data_path = path.with_suffix('.jsonl')
         else:
@@ -27,12 +32,22 @@ class JSONLDataset:
                              f'to both .index.npy and .jsonl files wrapped by pathlib.Path, but got {path}')
         
         if not index_path.exists():
-            raise FileNotFoundError(f'index file {index_path} not found')
+            if self.build_index_on_load:
+                print(f"Index not found, building index at {index_path}...")
+                self._build_index()
+            else:
+                raise FileNotFoundError(f'index file {index_path} not found')
 
         if not data_path.exists():
             raise FileNotFoundError(f'data file {data_path} not found')
         
         return data_path, index_path
+
+    def _build_index(self) -> None:
+        indexer = JSONLIndexer(self._data_path)
+        indexer.populate_index()
+        indexer.write_index_to_disk()
+        self.index = indexer._index
 
     def _load_index(self, path: Path) -> np.ndarray:
         # TODO: check if index loading is a performance bottleneck, if so, use a better integer loader
