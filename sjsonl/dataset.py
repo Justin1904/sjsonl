@@ -13,15 +13,18 @@ class JSONLDataset:
 
     def _resolve_path(self, path) -> Tuple[Path, Path]:
         path = normalize_path(path)
-        
+        if path.suffix and path.suffix != 'jsonl':
+            raise ValueError(f'path must have .jsonl extension, not {path.suffix}')
+
         if path.is_dir():
-            index_path = path / 'index.idx'
+            index_path = path / 'data.index.npy'
             data_path = path / 'data.jsonl'
-        elif path.is_file():
-            index_path = path.with_suffix('.idx')
+        elif path.with_suffix('.index.npy').is_file() and path.with_suffix('.jsonl').is_file():
+            index_path = path.with_suffix('.index.npy')
             data_path = path.with_suffix('.jsonl')
         else:
-            raise ValueError(f'path {path} must be a directory or file wrapped by pathlib.Path, not {type(path)}')
+            raise ValueError(f'path must be a directory, JSONL file or extension-less path'
+                             f'to both .index.npy and .jsonl files wrapped by pathlib.Path, but got {path}')
         
         if not index_path.exists():
             raise FileNotFoundError(f'index file {index_path} not found')
@@ -44,6 +47,5 @@ class JSONLDataset:
             data = json.loads(line)
         return data
 
-    @property
     def __len__(self) -> int:
         return len(self.index)

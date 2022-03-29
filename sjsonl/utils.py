@@ -9,7 +9,7 @@ def normalize_path(path: Union[Path, str]) -> Path:
         pass
     else:
         raise TypeError(f'path must be a str or Path, not {type(path)}')
-    return path
+    return path.expanduser().resolve()
 
 
 def count_lines(path: Union[Path, str]) -> int:

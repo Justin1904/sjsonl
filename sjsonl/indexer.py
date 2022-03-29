@@ -37,9 +37,9 @@ class JSONLIndexer:
             self._index.append(loc)
         print(f'Indexed {len(self._index)} lines')
 
-    def write_index_to_disk(self, path: Optional[Union[str, Path]]) -> None:
+    def write_index_to_disk(self, path: Optional[Union[str, Path]] = None) -> None:
         if not path:
-            path = self.data_path.with_suffix('.idx')
+            path = self.data_path.with_suffix('.index.npy')
         print(f'Writing index to disk at {path}...')
         data = np.array(self._index, dtype=np.int32)
         np.save(path, data)
