@@ -17,6 +17,8 @@ class JSONLDataset:
             print(f"Loading existing index from {self._index_path}...")
             self.index = self._load_index(self._index_path)
 
+        self._file_handle = None
+
     def _resolve_path(self, path: Union[str, Path]) -> Tuple[Path, Path]:
         # TODO: consider taking index building out of this function as it's not obvious by the name
         path = normalize_path(path)
