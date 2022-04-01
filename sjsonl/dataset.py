@@ -60,10 +60,11 @@ class JSONLDataset:
         if index < 0 or index >= len(self):
             raise IndexError(f'index must be between 0 and {len(self)-1}')
         # TODO: support only loading a subset of fields to speed up loading
-        with open(self._data_path, 'rb') as f:
-            f.seek(self.index[index])
-            line = f.readline().decode('utf-8')
-            data = json.loads(line)
+        if not self._file_handle:
+            self._file_handle = open(self._data_path, 'rb')
+        self._file_handle.seek(self.index[index])
+        line = self._file_handle.readline().decode('utf-8')
+        data = json.loads(line)
         return data
 
     def __len__(self) -> int:
