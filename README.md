@@ -75,7 +75,7 @@ This for now is just rough numbers for my own records. I tried this on a ~45GB J
 |45 GB |5min30s|  25min36s  |
 |21 GB |  27s  |   3min8s   |
 
-The start-up overhead after the index is built is pretty much negligible so I didn't measure them.
+The start-up overhead after the index is built is pretty much negligible so I didn't measure them. So roughly, it'll be 5-6x faster start up for the first time you load a dataset, and subsequent loads will take negligible start up time. Ofc, to emphasize again, this is just a lazy loader so it reduces **start up overhead**, not I/O throughput.
 
 ## Roadmap
 
