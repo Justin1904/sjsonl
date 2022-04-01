@@ -66,6 +66,17 @@ len(ds)  # get the length of the dataset
 print(f"Random access at O(1) complexity: {ds[10929]}")  # prints the 10929-th data point
 ```
 
+## (Not Rigorous At All) Benchmark
+
+This for now is just rough numbers for my own records. I tried this on a ~45GB JSONL dataset and a ~21 GB dataset I personally had access to, here's the comparison in time:
+
+| Time | Index | Fully-load |
+|------|-------|------------|
+|45 GB |5min30s|  25min36s  |
+|21 GB |  27s  |   3min8s   |
+
+The start-up overhead after the index is built is pretty much negligible so I didn't measure them.
+
 ## Roadmap
 
 This is not supposed to be a heavy-duty dataloader library. And yet, I could think of several possible improvements.
