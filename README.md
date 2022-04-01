@@ -19,7 +19,7 @@ This repo is a minimal library for working with [JSON Lines](https://jsonlines.o
 
 **What this library doesn't achieve**
 
-- This library **does not** reduce the throughput to read/process the content of an entire dataset.
+- This library **does not** improve the throughput to read/process the content of an entire dataset.
 
 Note that this library is written with DL training applications in mind. In those cases, data loading/processing can be delayed as training progresses and can overlap with GPU operations. Therefore, it is beneficial to shoot for minimal upfront cost and delay the I/O and processing cost till later. However, for synchronous data processing workload, this library offers little to no use as bulk-loading all the data still take the same amount (if not slightly more) of time. Though, it may be of some use if the intention is to sample from a decently large dataset.
 
