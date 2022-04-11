@@ -47,7 +47,7 @@ from sjsonl import JSONLIndexer
 
 indexer = JSONLIndexer("~/data/path/to/my/data.jsonl")
 indexer.populate_index()
-indexer.write_to_disk()  # can take an explicit "path" argument, by default writes to "~/data/path/to/my/data.index.npy"
+indexer.write_index_to_disk()  # can take an explicit "path" argument, by default writes to "~/data/path/to/my/data.index.npy"
 ```
 
 Once you index your data, you are ready to load data with random access.
@@ -76,6 +76,8 @@ This for now is just rough numbers for my own records. I tried this on a ~45GB J
 |21 GB |  27s  |   3min8s   |
 
 The start-up overhead after the index is built is pretty much negligible so I didn't measure them. So roughly, it'll be 5-6x faster start up for the first time you load a dataset, and subsequent loads will take negligible start up time. Ofc, to emphasize again, this is just a lazy loader so it reduces **start up overhead**, not I/O throughput.
+
+Apparently, the size of each line also matters. With same size but more and shorter lines, it's going to take longer and have a bigger index. This is likely why the 45GB example above is disproportionately slower than the 21GB example, despite there's only a ~2x increase in file size.
 
 ## Roadmap
 
