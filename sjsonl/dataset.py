@@ -71,3 +71,7 @@ class JSONLDataset:
 
     def __len__(self) -> int:
         return len(self.index)
+
+    def __del__(self):
+        if self._file_handle is not None and not self._file_handle.closed:
+            self._file_handle.close()
