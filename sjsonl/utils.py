@@ -1,6 +1,6 @@
 from typing import Type, Union
 from pathlib import Path
-from sh import wc  # type: ignore
+import subprocess
 
 def normalize_path(path: Union[Path, str]) -> Path:
     if isinstance(path, str):
@@ -13,4 +13,10 @@ def normalize_path(path: Union[Path, str]) -> Path:
 
 
 def count_lines(path: Union[Path, str]) -> int:
-    return int(wc('-l', path).split()[0])
+    # Execute the 'wc' command with the '-l' flag to count lines
+    result = subprocess.run(['wc', '-l', str(path)], capture_output=True, text=True, check=True)
+    
+    # Retrieve the line count from the output
+    line_count = int(result.stdout.split()[0])
+    
+    return line_count
