@@ -65,7 +65,7 @@ class JSONLDataset:
         if not self._file_handle:
             self._file_handle = open(self._data_path, 'rb')
         self._file_handle.seek(self.index[index])
-        line = self._file_handle.readline().decode('utf-8')
+        line = self._file_handle.readline().decode('utf-8-sig')
         data = json.loads(line)
         return data
 
