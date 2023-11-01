@@ -32,8 +32,11 @@ class JSONLDataset:
             index_path = path.with_suffix('.index.npy')
             data_path = path.with_suffix('.jsonl')
         else:
-            raise ValueError(f'path must be a directory, JSONL file or extension-less path'
-                             f'to both .index.npy and .jsonl files wrapped by pathlib.Path, but got {path}')
+            if not path.with_suffix('.jsonl').is_file():
+                raise FileNotFoundError(f'JSONL file not found at {path.with_suffix(".jsonl")}')
+            else:
+                raise ValueError(f'path must be a directory, JSONL file or extension-less path'
+                                 f'to both .index.npy and .jsonl files, but got invalid path {path}')
 
         if not data_path.exists():
             raise FileNotFoundError(f'data file {data_path} not found')\
